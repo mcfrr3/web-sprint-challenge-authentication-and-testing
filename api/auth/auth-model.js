@@ -7,5 +7,5 @@ exports.findBy = filter => {
 
 exports.add = async (user) => {
   const [id] = await db('users').insert(user);
-  return this.findBy('id', id).first();
+  return this.findBy({ id }).first();
 }
