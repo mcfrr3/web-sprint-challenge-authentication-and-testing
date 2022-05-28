@@ -2,12 +2,17 @@ const bcrypt = require('bcryptjs');
 const User = require('./auth-model');
 
 exports.checkBody = requiredFields => (req, res, next) => {
+  let missingField = false;
   requiredFields.forEach(field => {
-    if (req.body[field] == null) {
-      res.status(400).json({ message: 'username and password required' });
-      return;
+    if (req.body[field] == null || req.body[field] === '') {
+      missingField = true;
     }
   })
+
+  if (missingField) {
+    res.status(422).json({ message: 'username and password required' });
+    return;
+  }
   // for(const field in requiredFields) {
   //   if (req.body[field] == null) {
   //     res.status(400).json({ message: 'username and password required' });
@@ -22,7 +27,7 @@ exports.checkUsernameAvailable = async (req, res, next) => {
 
   const results = await User.findBy({ username });
   if (results.length > 0) {
-    res.status(400).json({ message: 'username taken' });
+    res.status(403).json({ message: 'username taken' });
     return;
   }
   next();
